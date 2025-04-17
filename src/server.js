@@ -2,6 +2,7 @@ const express = require('express');
 const projectController = require('./controllers/projectController');
 const taskController = require('./controllers/taskController');
 const userController = require('./controllers/userController');
+const database = require('./config/database');
 const app = express();
 
 app.use(express.json())
@@ -22,6 +23,12 @@ app.get('/users', userController.findAll)
 app.put('/users/:id', userController.updateUsers)
 app.delete('/users/:id', userController.removeUsers)
 
-app.listen(3002, () => {
-    console.log('Server is running on port 3002')
-})
+database.db.sync({ force: false })
+    .then(() => {
+        app.listen(3022, () => {
+            console.log('Server is running on port 3000')
+        })
+    })
+    .catch((error) => {
+        console.error('Error connecting to the database', error);
+    });

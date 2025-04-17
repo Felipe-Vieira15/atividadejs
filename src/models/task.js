@@ -1,31 +1,25 @@
-const tasks = []
+const database = require('../config/database');
+const User = require('../models/user');
+const Project = require('../models/project');
 
 class Task {
-    constructor (id, titulo, status, idProject, idUser) {
-        this.id = id
-        this.titulo = titulo
-        this.status = status
-        this.idProject = idProject
-        this.idUser = idUser
+    constructor() {
+        this.model = database.db.define('tasks', {
+            id: {
+                type: database.db.Sequelize.INTEGER,
+                primaryKey: true,
+                autoIncrement: true
+            },
+            titulo: {
+                type: database.db.Sequelize.STRING
+            },
+            status: {
+                type: database.db.Sequelize.STRING
+            }
+        });
+        this.model.belongsTo(User, { foreignKey: 'id' });
+        this.model.belongsTo(Project, { foreignKey: 'id' });
     }
-
-    save () {
-        tasks.push(this)
-    }
-
-    static fetchAll() {
-        return tasks
-    }
-
-    static findById (id) {
-        return tasks.find(task => task.id == id)
-    }
-
-    remove () {
-        const index = tasks.findIndex(task => task.id === this.id)
-        tasks.splice(index, 1)
-    }
-    
 }
 
-module.exports = Task
+module.exports = (new Task).model;
